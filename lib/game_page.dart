@@ -160,9 +160,14 @@ class _GamePageState extends State<GamePage> {
                                     onScreen[i] = false;
                                   });
                                 },
-                                  child: TokenWidget(
-                                    i,
-                                    100, false,
+                                  child: Container(width: 100,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: TokenWidget(
+                                        i,
+                                        100, false,
+                                      ),
+                                    ),
                                   ),
                                 ))
                             : Container(
@@ -189,9 +194,14 @@ class _GamePageState extends State<GamePage> {
                                         onScreen[i] = true;
                                       });
                                     },
-                                    child: TokenWidget(
-                                      i,
-                                      100, true,
+                                    child: Container(width: 100,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: TokenWidget(
+                                          i,
+                                          100, true,
+                                        ),
+                                      ),
                                     )),
                               );
                       },

@@ -76,30 +76,49 @@ class _PlaygroundInformationPageState extends State<PlaygroundInformationPage> {
             ),
           ),
           title: Text(playgrounds[i].name)),
-      body: Stack(
-        children: [
-          Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: Image.asset(
-                'assets/sky.png',
-                fit: BoxFit.fill,
-              )),
-          ListView(
+      body: GestureDetector(
+        onPanStart: (value) {
+          Navigator.pop(context);
+        },
+        child: Container(
+          color: Color.fromARGB(255, 0, 213, 0),
+          child: ListView(
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(14.0),
-                child: Text(
-                  playgrounds[i].name,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50),
-                ),
+              Stack(
+                children: [
+                  Align(
+                      alignment: Alignment.topCenter,
+                      child: Image.asset(
+                        'assets/sky_header.png',
+                        fit: BoxFit.fitWidth,
+                      )),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Container(
+                        height: 100,
+                        width: 100,
+                        child: FlareActor(
+                          'assets/Sunshine.flr',
+                          animation: 'sun_rays',
+                        )),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 100.0),
+                    child: Expanded(
+                      child: Text(
+                        playgrounds[i].name,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 30),
+                      ),
+                    ),
+                  )
+                ],
               ),
-
               Container(
-                height: 400,
+                height: 300,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(20.0),
                   child: GestureDetector(
                     onTap: () {
                       print('tapped');
@@ -201,7 +220,7 @@ class _PlaygroundInformationPageState extends State<PlaygroundInformationPage> {
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }

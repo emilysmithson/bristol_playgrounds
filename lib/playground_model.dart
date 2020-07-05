@@ -97,7 +97,7 @@ List<Playground> playgrounds = [
           'https://bristolplaygrounds.files.wordpress.com/2015/05/img_5291.jpg',
     ],
     description:
-        'This playground has plenty to keep everyone occupied. If you get bored of the play area, take a walk around the lake and feed the ducks (no bread please!) There\'s a cafe for refreshments as well as a toilet.',
+        'This playground has plenty to keep everyone occupied. As well as a lovely play area you can take a walk around the lake and feed the ducks (no bread please!) There\'s a cafe for refreshments as well as a toilet.',
     address: 'Portishead, Bristol BS20 7HX',
     coordinates: LatLng(51.489637, -2.774770),
     features: {
@@ -126,7 +126,7 @@ List<Playground> playgrounds = [
       'https://media-cdn.tripadvisor.com/media/photo-s/13/9c/52/a3/photo4jpg.jpg'
     ],
     description:
-        'Set in stunning scenery on the Blaise Estate, this is one of the biggest playgrounds in Bristol with play equipment to suit everyone. It has a giant spider\'s web, a double height swing, two castles to climb, an aerial obstacle course, a double swing, sandpit with pirate ship and plenty more. If you could possibly get bored by the playground there\'s also a cafe and lots of stunning walks nearby. Climb the hill to the old folly or wonder down to the river to find the stepping stones.',
+        'Set in stunning scenery on the Blaise Estate, this is one of the biggest playgrounds in Bristol with play equipment to suit everyone. It has a giant spider\'s web, a double height swing, two castles to climb, an aerial obstacle course, sandpit with pirate ship and plenty more. If you could possibly get bored by the playground there\'s also a cafe and lots of stunning walks nearby. Climb the hill to the old folly or wonder down to the river to find the stepping stones.',
     address: '19A Kings Weston Rd, Bristol BS10 7QT',
     coordinates: LatLng(51.505704, -2.634560),
     features: {
@@ -152,7 +152,7 @@ List<Playground> playgrounds = [
       'https://bristolplaygrounds.files.wordpress.com/2015/03/img_6181.jpg',
       'https://bristolplaygrounds.files.wordpress.com/2015/03/img_6183.jpg?w=225&h=300'
     ],
-    description: '',
+    description: 'Set in the middle of this lovely green space this small playground has a lovely sandpit, witches hat, swings, zipwire and rocking elephants.',
     address: 'Redland Ct Rd, Bristol BS6 7EH',
     coordinates: LatLng(51.473690, -2.606140),
     features: {
@@ -184,7 +184,7 @@ List<Playground> playgrounds = [
     ],
     address: 'St Andrew\'s Rd, Bristol BS11 9EL',
     description:
-        'A lovely little playground in Avonmouth with a great variety of equipment.',
+        'A lovely little playground in Avonmouth with a great variety of equipment. It features a small obstacle course, climbing frame and rocking motorbike.',
     coordinates: LatLng(51.500495, -2.697677),
     features: {
       'cafe': false,
@@ -208,7 +208,7 @@ List<Playground> playgrounds = [
     images: [
       'https://bristolplaygrounds.files.wordpress.com/2016/01/img_9856.jpg?w=625'
     ],
-    description: '',
+    description: 'This beautiful park ',
     address: '12 Hill Ave, Bedminster, Bristol BS3 4SN',
     coordinates: LatLng(51.439923, -2.589059),
     features: {
@@ -303,7 +303,7 @@ List<Playground> playgrounds = [
     id: '9',
     location: 'Clifton',
     playground: true,
-    name: 'Clifton Suspension Bridge Playground',
+    name: 'Clifton',
     images: [
       'https://bristolplaygrounds.files.wordpress.com/2015/04/img_7059.jpg?w=624'
     ],
@@ -326,7 +326,7 @@ List<Playground> playgrounds = [
 
   Playground(
     id: '10',
-    name: 'Felix Road Adventure Playground',
+    name: 'Felix Road',
     playground: true,
     location: 'Easton',
     images: [
@@ -396,22 +396,29 @@ List<Playground> playgrounds = [
       'animation_ontap': 'Untitled'
     },
   ),
-//  Playground(
-//      id: '13',
-//      name: 'Horfield Common',
-//      images: [
-//        'https://bristolplaygrounds.files.wordpress.com/2015/03/img_4775-0.jpg?w=624'
-//      ],
-//      description: '',
-//      address: 'Hengrove, Bristol BS14 0AP',
-//      coordinates: LatLng(51.485373, -2.594317),
-//      features: {
-//        'cafe': true,
-//        'toilet': true,
-//        'waterplay': false,
-//        'duckpond': false,
-//        'sandpit': false,
-//      }),
+  Playground(
+      id: '13',
+      name: 'Horfield Common',
+      playground: true,
+      location: 'Horfield',
+      images: [
+        'https://bristolplaygrounds.files.wordpress.com/2015/03/img_4775-0.jpg?w=624'
+      ],
+      description: '',
+      address: 'Hengrove, Bristol BS14 0AP',
+      coordinates: LatLng(51.485373, -2.594317),
+      features: {
+        'cafe': true,
+        'toilet': true,
+        'waterplay': false,
+        'duckpond': false,
+        'sandpit': false,
+      },
+    flare: {
+      'size': 150.0,
+      'asset': 'assets/horfield.flr',
+      'animation_ontap': 'Untitled'
+    },),
   Playground(
     id: '14',
     name: 'Kings Head Lane',
@@ -889,22 +896,29 @@ List<Playground> playgrounds = [
       'running_animation': 'Untitled'
     },
   ),
-//  Playground(
-//      id: '38',
-//      name: 'Gainsborough Square',
-//      images: [
-//        'http://www.newleafstudio.com/images/LEAF_project_gainsborough/03_Gainsborough_IMG_5954.jpg'
-//      ],
-//      description: '',
-//      address: 'Gainsborough Square, Lockleaze, Bristol BS7 9XA',
-//      coordinates: LatLng(51.490299, -2.563094),
-//      features: {
-//        'cafe': false,
-//        'toilet': false,
-//        'waterplay': false,
-//        'duckpond': false,
-//        'sandpit': false,
-//      }),
+  Playground(
+      id: '38',
+      name: 'Gainsborough Square',
+      playground: true,
+      location: 'Lockleaze',
+      images: [
+        'http://www.newleafstudio.com/images/LEAF_project_gainsborough/03_Gainsborough_IMG_5954.jpg'
+      ],
+      description: '',
+      address: 'Gainsborough Square, Lockleaze, Bristol BS7 9XA',
+      coordinates: LatLng(51.490299, -2.563094),
+      features: {
+        'cafe': false,
+        'toilet': false,
+        'waterplay': false,
+        'duckpond': false,
+        'sandpit': false,
+      },
+    flare: {
+      'asset': 'assets/gainsborough_square.flr',
+      'size': 150.0,
+      'running_animation': 'Untitled'
+    },),
   Playground(
     id: '39',
     playground: true,
@@ -1014,13 +1028,7 @@ List<Playground> playgrounds = [
         'running_animation': 'Untitled',
         'size': 150.0
       }),
-  Playground(id: '101', playground: false, location: '', name: 'Swing', user: {
-    'visited': true,
-  }, flare: {
-    'asset': 'assets/swing_character.flr',
-    'running_animation': 'Swing',
-    'size': 100.0
-  }),
+
   Playground(
       id: '100',
       location: '',
@@ -1034,6 +1042,13 @@ List<Playground> playgrounds = [
         'running_animation': 'Untitled',
         'size': 200.0
       }),
+  Playground(id: '101', playground: false, location: '', name: 'Swing', user: {
+    'visited': true,
+  }, flare: {
+    'asset': 'assets/swing_character.flr',
+    'running_animation': 'Swing',
+    'size': 100.0
+  }),
 ];
 
 getDistance() async {
@@ -1171,7 +1186,6 @@ class DatabaseHelper {
       'playgrounds',
     );
 
-    print(map);
     for (int i = 0; i < playgrounds.length; i++) {
       if (playgrounds[i].playground) {
         playgrounds.replaceRange(i, i + 1, [

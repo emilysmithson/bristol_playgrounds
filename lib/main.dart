@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     getDistance();
-    _updateDb();
+//    _updateDb();
 
     super.initState();
   }
@@ -61,7 +61,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(actions: [
+        appBar: AppBar(elevation: 0,
+            actions: [
           Expanded(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -184,7 +185,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    PlaygroundCheck(i),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Container(width: 300, height: 300,child: PlaygroundCheck(i)),
+                    ),
                     Text(
                       'You can now play with your new peice of equipment in your virtual playground',
                       style:
