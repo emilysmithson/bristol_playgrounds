@@ -17,94 +17,110 @@ class _ListPageState extends State<ListPage> {
   bool _filterSandpit = false;
   bool _filterWaterplay = false;
   bool _filterDuckpond = false;
+  bool _filterVisited = false;
+  bool _filterUnvisited = false;
   List<Widget> playgroundList = List<Widget>();
   bool _sortAtoZ = false;
   bool _sortNearest = false;
 
   void _addPlaygroundCard(int i) {
-    playgrounds[i].playground? playgroundList.add(
-      GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => PlaygroundInformationPage(i)),
-          );
-        },
-        child: Container(
-          height: 150,
-          child: Card(elevation: 10,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  TokenWidget(i,80, false),
-                  Container(
-                    width: 200,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+    playgrounds[i].playground
+        ? playgroundList.add(
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => PlaygroundInformationPage(i)),
+                ).then((value) {
+                  setState(() {
+                    _createPlaygroundCards();
+                  });
+                });
+                ;
+              },
+              child: Container(
+                height: 150,
+                child: Card(
+                  elevation: 10,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text(
-                          playgrounds[i].name,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
+                        TokenWidget(i, 80, false),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                playgrounds[i].name,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 18),
+                              ),
+                              Text(playgrounds[i].location),
+                              SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  playgrounds[i].features['cafe']
+                                      ? Icon(Icons.local_cafe)
+                                      : Container(),
+                                  playgrounds[i].features['toilet']
+                                      ? Icon(Icons.wc)
+                                      : Container(),
+                                  playgrounds[i].features['duckpond']
+                                      ? Icon(MyFlutterApp.duck)
+                                      : Container(),
+                                  playgrounds[i].features['sandpit']
+                                      ? Icon(MyFlutterApp.sandpit)
+                                      : Container(),
+                                  playgrounds[i].features['waterplay']
+                                      ? Icon(MyFlutterApp.waterplay)
+                                      : Container(),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                        Text(playgrounds[i].location),
-                        SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
-                            playgrounds[i].features['cafe']
-                                ? Icon(Icons.local_cafe)
-                                : Container(),
-                            playgrounds[i].features['toilet']
-                                ? Icon(Icons.wc)
-                                : Container(),
-                            playgrounds[i].features['duckpond']
-                                ? Icon(MyFlutterApp.duck)
-                                : Container(),
-                            playgrounds[i].features['sandpit']
-                                ? Icon(MyFlutterApp.sandpit)
-                                : Container(),
-                            playgrounds[i].features['waterplay']
-                                ? Icon(MyFlutterApp.waterplay)
-                                : Container(),
+                            IconButton(
+                                icon: Icon(
+                                  playgrounds[i].user['favourite']
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: playgrounds[i].user['favourite']
+                                      ? Colors.red
+                                      : Colors.black,
+                                ),
+                                onPressed: () async {
+                                  DatabaseHelper helper =
+                                      DatabaseHelper.instance;
+                                  helper.updateFavouritesOrVisited(i, true);
+                                  setState(() {
+                                    _createPlaygroundCards();
+                                  });
+                                }),
+                            Icon(Icons.star,
+                                color: playgrounds[i].user['visited']
+                                    ? Colors.yellow
+                                    : Colors.grey),
+                            Text(playgrounds[i].distance.toStringAsFixed(1) +
+                                'km'),
                           ],
-                        ),
+                        )
                       ],
                     ),
                   ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      IconButton(
-                          icon: Icon(
-                            playgrounds[i].user['favourite']
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: playgrounds[i].user['favourite'] ? Colors.red : Colors.black,
-                          ),
-                          onPressed: () async{
-                            DatabaseHelper helper = DatabaseHelper.instance;
-                            helper.updateFavouritesOrVisited(i, true);
-                            setState(()  {
-
-                              _createPlaygroundCards();
-                            });
-                          }),
-                      Text(playgrounds[i].distance.toStringAsFixed(1) + 'km'),
-                    ],
-                  )
-                ],
+                ),
               ),
             ),
-          ),
-        ),
-      ),
-    ):null;
+          )
+        : null;
   }
 
   void _sortPlaygroundCards(bool distance) {
@@ -116,7 +132,7 @@ class _ListPageState extends State<ListPage> {
   void _createPlaygroundCards() {
     playgroundList.clear();
     for (int i = 0; i < playgrounds.length; i++) {
-      if(playgrounds[i].playground){
+      if (playgrounds[i].playground) {
         if ((_showFavourites && playgrounds[i].user['favourite']) ||
             !_showFavourites &&
                 ((_filterCafe && playgrounds[i].features['cafe']) ||
@@ -128,14 +144,16 @@ class _ListPageState extends State<ListPage> {
                 ((_filterWaterplay && playgrounds[i].features['waterplay']) ||
                     !_filterWaterplay) &&
                 ((_filterDuckpond && playgrounds[i].features['duckpond']) ||
-                    !_filterDuckpond)) {
+                    !_filterDuckpond) &&
+                ((_filterVisited && playgrounds[i].user['visited']) ||
+                    !_filterVisited) &&
+                ((_filterUnvisited && !playgrounds[i].user['visited']) ||
+                    !_filterUnvisited)) {
           _addPlaygroundCard(i);
-        }}
-
+        }
+      }
     }
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   @override
@@ -146,69 +164,68 @@ class _ListPageState extends State<ListPage> {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
-        actions: <Widget>[DropdownButton<String>(
-          hint: Text(
-            'Sort by',
-            style: TextStyle(color: Colors.white),
-          ),
-          items: [
-            DropdownMenuItem(
-              child: Row(
-                children: <Widget>[
-                  Text('Distance'),
-                  SizedBox(width: 10),
-                  _sortNearest ? Icon(Icons.check) : Container()
-                ],
-              ),
-              value: 'Distance',
-            ),
-            DropdownMenuItem(
-              child: Row(
-                children: <Widget>[
-                  Text('A to Z'),
-                  SizedBox(width: 10),
-                  _sortAtoZ ? Icon(Icons.check) : Container()
-                ],
-              ),
-              value: 'A to Z',
-            ),
-          ],
-          onChanged: (value) {
-            if (value == 'Distance') {
-              _sortPlaygroundCards(true);
-            } else {
-              _sortPlaygroundCards(false);
-            }
-            setState(() {
-              _createPlaygroundCards();
-            });
-          },
-        ),
-          SizedBox(width: 20),
+        backgroundColor: Color.fromARGB(250, 0, 175, 212),
+        actions: <Widget>[
           DropdownButton<String>(
-            items: [ DropdownMenuItem(
-              child: Row(
-                children: <Widget>[
-
-
-                  Text('Clear all filters'),
-                ],
-              ),
-              value: 'Clear all filters',
+            hint: Text(
+              'Sort by',
+              style: TextStyle(color: Colors.white),
             ),
+            items: [
+              DropdownMenuItem(
+                child: Row(
+                  children: <Widget>[
+                    Text('Distance'),
+                    SizedBox(width: 10),
+                    _sortNearest ? Icon(Icons.check) : Container()
+                  ],
+                ),
+                value: 'Distance',
+              ),
+              DropdownMenuItem(
+                child: Row(
+                  children: <Widget>[
+                    Text('A to Z'),
+                    SizedBox(width: 10),
+                    _sortAtoZ ? Icon(Icons.check) : Container()
+                  ],
+                ),
+                value: 'A to Z',
+              ),
+            ],
+            onChanged: (value) {
+              if (value == 'Distance') {
+                _sortPlaygroundCards(true);
+              } else {
+                _sortPlaygroundCards(false);
+              }
+              setState(() {
+                _createPlaygroundCards();
+              });
+            },
+          ),
+SizedBox(width: 10),
+          DropdownButton<String>(
+            items: [
+              DropdownMenuItem(
+                child: Row(
+                  children: <Widget>[
+                    Text('Clear all filters'),
+                  ],
+                ),
+                value: 'Clear all filters',
+              ),
               DropdownMenuItem(
                 child: Row(
                   children: <Widget>[
                     Icon(Icons.wc),
                     SizedBox(width: 10),
                     Text('Toilet'),
-                    SizedBox(width: 10),
+                    SizedBox(width: 2),
                     _filterToilet ? Icon(Icons.check) : Container()
                   ],
                 ),
@@ -220,7 +237,7 @@ class _ListPageState extends State<ListPage> {
                     Icon(Icons.local_cafe),
                     SizedBox(width: 10),
                     Text('Cafe'),
-                    SizedBox(width: 10),
+                    SizedBox(width: 2),
                     _filterCafe ? Icon(Icons.check) : Container()
                   ],
                 ),
@@ -232,7 +249,7 @@ class _ListPageState extends State<ListPage> {
                     Icon(MyFlutterApp.duck),
                     SizedBox(width: 10),
                     Text('Duckpond'),
-                    SizedBox(width: 10),
+                    SizedBox(width: 2),
                     _filterDuckpond ? Icon(Icons.check) : Container()
                   ],
                 ),
@@ -244,7 +261,7 @@ class _ListPageState extends State<ListPage> {
                     Icon(MyFlutterApp.sandpit),
                     SizedBox(width: 10),
                     Text('Sandpit'),
-                    SizedBox(width: 10),
+                    SizedBox(width: 2),
                     _filterSandpit ? Icon(Icons.check) : Container()
                   ],
                 ),
@@ -256,11 +273,35 @@ class _ListPageState extends State<ListPage> {
                     Icon(MyFlutterApp.waterplay),
                     SizedBox(width: 10),
                     Text('Waterplay'),
-                    SizedBox(width: 10),
+                    SizedBox(width: 2),
                     _filterWaterplay ? Icon(Icons.check) : Container()
                   ],
                 ),
                 value: 'Waterplay',
+              ),
+              DropdownMenuItem(
+                child: Row(
+                  children: <Widget>[
+                    Icon(Icons.star),
+                    SizedBox(width: 10),
+                    Text('Visited'),
+                    SizedBox(width: 2),
+                    _filterVisited ? Icon(Icons.check) : Container()
+                  ],
+                ),
+                value: 'Visted',
+              ),
+              DropdownMenuItem(
+                child: Row(
+                  children: <Widget>[
+                    Icon(Icons.star_border),
+                    SizedBox(width: 10),
+                    Text('Not visited'),
+                    SizedBox(width: 2),
+                    _filterUnvisited ? Icon(Icons.check) : Container()
+                  ],
+                ),
+                value: 'Not visited',
               ),
             ],
             hint: Text(
@@ -276,6 +317,8 @@ class _ListPageState extends State<ListPage> {
                     _filterDuckpond = false;
                     _filterCafe = false;
                     _filterToilet = false;
+                    _filterUnvisited = false;
+                    _filterVisited = false;
                     _createPlaygroundCards();
                   });
                   break;
@@ -308,11 +351,31 @@ class _ListPageState extends State<ListPage> {
                     _filterWaterplay = !_filterWaterplay;
                     _createPlaygroundCards();
                   });
+
+                  break;
+                case 'Visted':
+                  setState(() {
+                    _filterVisited = !_filterVisited;
+                    if (_filterVisited) {
+                      _filterUnvisited = false;
+                    }
+                    _createPlaygroundCards();
+                  });
+
+                  break;
+                case 'Not visited':
+                  setState(() {
+                    _filterUnvisited = !_filterUnvisited;
+                    if (_filterUnvisited) {
+                      _filterVisited = false;
+                    }
+                    _createPlaygroundCards();
+                  });
+
                   break;
               }
             },
           ),
-
           IconButton(
               icon: Icon(
                 _showFavourites ? Icons.favorite : Icons.favorite_border,
@@ -326,36 +389,31 @@ class _ListPageState extends State<ListPage> {
               }),
         ],
       ),
-      body: playgroundList.length==0? Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Text('You haven\'t chosen any favourites yet'),
-            Text('\nTap the heart icon next to any playground to favourite it. '
-                '\n\nTap the heart in the top right to show your favourites.\n'),
-            Icon(Icons.favorite, color: Colors.red),
-          ],
-        ),
-      ):
-      Container(color: Colors.blue,
-        child: ListView.builder(
-          itemCount: playgroundList.length,
-          itemBuilder: (context, index) {
-            return playgroundList[index];
-          },
-        ),
-      ),
+      body: playgroundList.length == 0
+          ? Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Text('You haven\'t chosen any favourites yet'),
+                  Text(
+                      '\nTap the heart icon next to any playground to favourite it. '
+                      '\n\nTap the heart in the top right to show your favourites.\n'),
+                  Icon(Icons.favorite, color: Colors.red),
+                ],
+              ),
+            )
+          : Container(
+              color: Color.fromARGB(250, 0, 175, 212),
+              child: ListView.builder(
+                itemCount: playgroundList.length,
+                itemBuilder: (context, index) {
+                  return playgroundList[index];
+                },
+              ),
+            ),
     );
   }
-
 }
-
-
-
-
-
-
-
 
 //import 'package:flutter/material.dart';
 //import 'playground_model.dart';

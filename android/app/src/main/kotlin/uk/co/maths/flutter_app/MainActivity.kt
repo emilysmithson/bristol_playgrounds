@@ -1,4 +1,4 @@
-package uk.co.maths.flutter_app
+package uk.co.bristolplaygrounds
 
 import io.flutter.embedding.android.FlutterActivity
 

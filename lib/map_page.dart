@@ -6,6 +6,13 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'playground_information_page.dart';
 import 'my_flutter_app_icons.dart';
 import 'token_widget.dart';
+import 'dart:io';
+import 'package:connectivity/connectivity.dart';
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class MapPage extends StatefulWidget {
   MapPage();
@@ -22,71 +29,88 @@ class _MapPageState extends State<MapPage> {
   bool _filterWaterplay = false;
   bool _filterDuckpond = false;
   bool _showingInformation = false;
+  bool _filterVisited = false;
+  bool _filterUnvisited = false;
 
   void _addMarker(int i) {
-    playgrounds[i].playground?markers.add(
-      Marker(
-        width: 40.0,
-        height: 80.0,
-        point: playgrounds[i].coordinates,
-        builder: (ctx) => Container(
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.0)),
-          child: Stack(
-            children: <Widget>[
-              Container(
-                width: 40,
-                height: 80,
+    playgrounds[i].playground
+        ? markers.add(
+            Marker(
+              width: 40.0,
+              height: 80.0,
+              point: playgrounds[i].coordinates,
+              builder: (ctx) => Container(
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(15.0)),
                 child: Stack(
                   children: <Widget>[
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          addInformation(i);
-                        });
-                      },
-                      child: Icon(Icons.location_on,
-                          color: Theme.of(context).primaryColor, size: 40),
+                    Container(
+                      width: 40,
+                      height: 80,
+                      child: Stack(
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                addInformation(i);
+                              });
+                            },
+                            child: Stack(
+                              children: [
+                                Icon(Icons.location_on,
+                                    color: playgrounds[i].user['visited']
+                                        ? Color.fromARGB(250, 0, 175, 212)
+                                        : Colors.grey,
+                                    size: 40),
+                                Container()
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    ):null;
+            ),
+          )
+        : null;
   }
 
   void _filteredMarkers() {
     markers.clear();
     for (int i = 0; i < playgrounds.length; i++) {
-      if(playgrounds[i].playground){
-      if ((_showFavourites && playgrounds[i].user['favourite']) ||
-          !_showFavourites &&
-              ((_filterCafe && playgrounds[i].features['cafe']) ||
-                  !_filterCafe) &&
-              ((_filterSandpit && playgrounds[i].features['sandpit']) ||
-                  !_filterSandpit) &&
-              ((_filterToilet && playgrounds[i].features['toilet']) ||
-                  !_filterToilet) &&
-              ((_filterWaterplay && playgrounds[i].features['waterplay']) ||
-                  !_filterWaterplay) &&
-              ((_filterDuckpond && playgrounds[i].features['duckpond']) ||
-                  !_filterDuckpond)) {
-        _addMarker(i);
-      }}
-
+      if (playgrounds[i].playground) {
+        if ((_showFavourites && playgrounds[i].user['favourite']) ||
+            !_showFavourites &&
+                ((_filterCafe && playgrounds[i].features['cafe']) ||
+                    !_filterCafe) &&
+                ((_filterSandpit && playgrounds[i].features['sandpit']) ||
+                    !_filterSandpit) &&
+                ((_filterToilet && playgrounds[i].features['toilet']) ||
+                    !_filterToilet) &&
+                ((_filterWaterplay && playgrounds[i].features['waterplay']) ||
+                    !_filterWaterplay) &&
+                ((_filterDuckpond && playgrounds[i].features['duckpond']) ||
+                    !_filterDuckpond) &&
+                ((_filterVisited && playgrounds[i].user['visited']) ||
+                    !_filterVisited) &&
+                ((_filterUnvisited && !playgrounds[i].user['visited']) ||
+                    !_filterUnvisited)) {
+          _addMarker(i);
+        }
+      }
     }
   }
 
   void addInformation(int i) async {
-    if (_showingInformation)  {
-     await markers.removeLast();
+    if (_showingInformation) {
+      await markers.removeLast();
     }
     _showingInformation = true;
     markers.add(
       Marker(
-        width: 100.0,
+        width: 170.0,
         height: 380.0,
         point: playgrounds[i].coordinates,
         builder: (ctx) => Stack(
@@ -95,6 +119,7 @@ class _MapPageState extends State<MapPage> {
               alignment: Alignment.topCenter,
               child: Container(
                 height: 170,
+                width: 120,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15.0),
                   color: Colors.white,
@@ -111,16 +136,12 @@ class _MapPageState extends State<MapPage> {
                     },
                     child: Column(
                       children: [
-                       TokenWidget(i,80, false),
+                        TokenWidget(i, 80, false),
                         SizedBox(height: 8.0),
                         Text(
                           playgrounds[i].name,
                           textAlign: TextAlign.center,
                           style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          playgrounds[i].location,
-                          textAlign: TextAlign.center,
                         ),
                       ],
                     ),
@@ -135,11 +156,12 @@ class _MapPageState extends State<MapPage> {
                 height: 80,
                 child: Stack(
                   children: <Widget>[
-                    GestureDetector(
-                      onTap: () {},
-                      child: Icon(Icons.location_on,
-                          color: Theme.of(context).primaryColor, size: 40),
-                    ),
+                    Icon(Icons.location_on,
+                        color: playgrounds[i].user['visited']
+                            ? Color.fromARGB(250, 0, 175, 212)
+                            : Colors.grey,
+                        size: 40),
+                    Container()
                   ],
                 ),
               ),
@@ -157,26 +179,39 @@ class _MapPageState extends State<MapPage> {
   }
 
   List markers = List<Marker>();
-
+  StreamSubscription<ConnectivityResult> subscription;
   @override
   void initState() {
     getPlaygrounds();
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+          if(result == ConnectivityResult.none){
+            final snackBar = SnackBar(
+              content: Text('You have no internet connection so this map may not display properly'),
+
+            );
+            Scaffold.of(context).showSnackBar(snackBar);
+          }
+
+    });
     super.initState();
   }
 
-
   @override
   void dispose() {
-
-super.dispose();
-
-
+    subscription.cancel();
+    super.dispose();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(250, 0, 175, 212),
         actions: <Widget>[
           DropdownButton<String>(
             items: [
@@ -248,6 +283,30 @@ super.dispose();
                 ),
                 value: 'Waterplay',
               ),
+              DropdownMenuItem(
+                child: Row(
+                  children: <Widget>[
+                    Icon(Icons.star),
+                    SizedBox(width: 10),
+                    Text('Visited'),
+                    SizedBox(width: 10),
+                    _filterVisited ? Icon(Icons.check) : Container()
+                  ],
+                ),
+                value: 'Visted',
+              ),
+              DropdownMenuItem(
+                child: Row(
+                  children: <Widget>[
+                    Icon(Icons.star_border),
+                    SizedBox(width: 10),
+                    Text('Not visited'),
+                    SizedBox(width: 10),
+                    _filterUnvisited ? Icon(Icons.check) : Container()
+                  ],
+                ),
+                value: 'Not visited',
+              ),
             ],
             hint: Text(
               'Filter by: ',
@@ -262,6 +321,8 @@ super.dispose();
                     _filterDuckpond = false;
                     _filterCafe = false;
                     _filterToilet = false;
+                    _filterUnvisited = false;
+                    _filterVisited = false;
                     _filteredMarkers();
                   });
                   break;
@@ -295,6 +356,26 @@ super.dispose();
                     _filteredMarkers();
                   });
                   break;
+                case 'Visted':
+                  setState(() {
+                    _filterVisited = !_filterVisited;
+                    if (_filterVisited) {
+                      _filterUnvisited = false;
+                    }
+                    _filteredMarkers();
+                  });
+
+                  break;
+                case 'Not visited':
+                  setState(() {
+                    _filterUnvisited = !_filterUnvisited;
+                    if (_filterUnvisited) {
+                      _filterVisited = false;
+                    }
+                    _filteredMarkers();
+                  });
+
+                  break;
               }
             },
           ),
@@ -316,7 +397,7 @@ super.dispose();
         options: MapOptions(
             center: LatLng(51.4558, -2.5881),
             zoom: 11,
-            maxZoom: 19,
+            maxZoom: 18,
             onTap: (p) {
               if (_showingInformation) {
                 setState(() {
